@@ -1,0 +1,18 @@
+# PersianDate keywords.txt
+# Version 1.1.0
+
+PersianDate	KEYWORD1
+
+setGregorianDate	KEYWORD2
+convert	KEYWORD2
+getYear	KEYWORD2
+getMonth	KEYWORD2
+getDay	KEYWORD2
+getMonthName	KEYWORD2
+getShortMonthName	KEYWORD2
+getDayOfWeek	KEYWORD2
+getDayOfWeekName	KEYWORD2
+getShortDayOfWeekName	KEYWORD2
+getDateString	KEYWORD2
+getPersianDateString	KEYWORD2
+getFullPersianDateString	KEYWORD2
