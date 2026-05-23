@@ -1,163 +1,214 @@
-/*
-  PersianDate.cpp - Implementation of PersianDate library.
-  Version 1.1.0
-  Author: Hamidreza Milaninia (ARDUnia Agency)
-  Algorithm by Hamidreza Milaninia.
-*/
-
 #include "PersianDate.h"
+#include <Arduino.h>
 
-const char* PersianDate::_monthNames[12] = {
-    "Farvardin", "Ordibehesht", "Khordad", "Tir", "Mordad", "Shahrivar",
-    "Mehr", "Aban", "Azar", "Dey", "Bahman", "Esfand"
-};
-const char* PersianDate::_shortMonthNames[12] = {
-    "Far", "Ord", "Kho", "Tir", "Mor", "Sha",
-    "Meh", "Aba", "Aza", "Dey", "Bah", "Esf"
-};
-const char* PersianDate::_dayNames[7] = {
-    "Saturday", "Sunday", "Monday", "Tuesday",
-    "Wednesday", "Thursday", "Friday"
-};
-const char* PersianDate::_shortDayNames[7] = {
-    "Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"
+// ========== جداول نام‌های ماه‌های شمسی (فارسی) ==========
+const char* PersianDate::_persianMonthNames[12] = {
+  "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور",
+  "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"
 };
 
+const char* PersianDate::_shortPersianMonthNames[12] = {
+  "فر", "ار", "خر", "تی", "مر", "شه",
+  "مه", "آبا", "آذ", "دی", "به", "اس"
+};
+
+// ========== جداول نام‌های روزهای هفته (فارسی) ==========
+const char* PersianDate::_persianWeekdayNames[7] = {
+  "شنبه", "یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه"
+};
+
+const char* PersianDate::_shortPersianWeekdayNames[7] = {
+  "ش", "ی", "د", "س", "چ", "پ", "ج"
+};
+
+// ========== سازنده ==========
 PersianDate::PersianDate() {
-    _gy = 2000; _gm = 1; _gd = 1;
-    _jy = 0; _jm = 0; _jd = 0;
-    _dayOfWeek = 0;
-    _converted = false;
+  _clear();
 }
 
+void PersianDate::_clear() {
+  _gy = 2000; _gm = 1; _gd = 1;
+  _jy = 1378; _jm = 10; _jd = 11;
+}
+
+// ========== تنظیم تاریخ ==========
 void PersianDate::setGregorianDate(int year, int month, int day) {
-    _gy = year; _gm = month; _gd = day;
-    _converted = false;
-}
-void PersianDate::setGregorianDate(const DateTime& dt) {
-    _gy = dt.year(); _gm = dt.month(); _gd = dt.day();
-    _converted = false;
+  _gy = year; _gm = month; _gd = day;
 }
 
-bool PersianDate::_isGregorianLeap(int year) {
-    return (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0));
+void PersianDate::setPersianDate(int year, int month, int day) {
+  _jy = year; _jm = month; _jd = day;
 }
 
-int PersianDate::_getDayOfYear(int year, int month, int day) {
+// ========== تبدیل میلادی به شمسی (غیراستاتیک) ==========
+void PersianDate::convertGregorianToPersian() {
+  Date result = gregorianToPersian(_gy, _gm, _gd);
+  _jy = result.year;
+  _jm = result.month;
+  _jd = result.day;
+}
+
+// ========== تبدیل شمسی به میلادی (غیراستاتیک) ==========
+void PersianDate::convertPersianToGregorian() {
+  Date result = persianToGregorian(_jy, _jm, _jd);
+  _gy = result.year;
+  _gm = result.month;
+  _gd = result.day;
+}
+
+// ========== توابع استاتیک عمومی ==========
+
+Date PersianDate::gregorianToPersian(int gy, int gm, int gd) {
+  int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+  if (isGregorianLeapYear(gy)) daysInMonth[1] = 29;
+  int doy = gd;
+  for (int i = 0; i < gm - 1; i++) doy += daysInMonth[i];
+
+  bool gregLeap = isGregorianLeapYear(gy);
+  int threshold = gregLeap ? 81 : 80;
+
+  int jy;
+  if (doy < threshold) jy = gy - 622;
+  else jy = gy - 621;
+
+  int jalaliDayOfYear;
+  if (doy >= threshold) {
+    jalaliDayOfYear = doy - threshold + 1;
+  } else {
+    int prevYear = gy - 1;
+    int prevYearDays = isGregorianLeapYear(prevYear) ? 366 : 365;
+    jalaliDayOfYear = doy + (prevYearDays - threshold + 1);
+  }
+
+  int monthDays[12] = {31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29};
+  if (isPersianLeapYear(jy)) monthDays[11] = 30;
+
+  int remain = jalaliDayOfYear;
+  for (int i = 0; i < 12; i++) {
+    if (remain <= monthDays[i]) {
+      return {jy, i + 1, remain};
+    }
+    remain -= monthDays[i];
+  }
+  return {jy, 12, 30};
+}
+
+// تبدیل شمسی به میلادی با استفاده از الگوریتم معکوس
+Date PersianDate::persianToGregorian(int jy, int jm, int jd) {
+  int monthDays[12] = {31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29};
+  if (isPersianLeapYear(jy)) monthDays[11] = 30;
+  int jalaliDayOfYear = jd;
+  for (int i = 0; i < jm - 1; i++) jalaliDayOfYear += monthDays[i];
+  
+  int candidates[2] = {jy + 621, jy + 622};
+  for (int idx = 0; idx < 2; idx++) {
+    int gy = candidates[idx];
+    bool gregLeap = isGregorianLeapYear(gy);
+    int threshold = gregLeap ? 81 : 80;
+    int doy = jalaliDayOfYear + threshold - 1;
+    
+    int maxDays = gregLeap ? 366 : 365;
+    if (doy < 1 || doy > maxDays) continue;
+    
     int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    if (_isGregorianLeap(year)) daysInMonth[1] = 29;
-    int doy = 0;
-    for (int i = 0; i < month - 1; i++) doy += daysInMonth[i];
-    doy += day;
-    return doy;
-}
-
-bool PersianDate::_isJalaliLeap(int jy) {
-    if (jy < 1372) return (jy % 4 == 2);
-    else return (jy % 4 == 1);
-}
-
-void PersianDate::_gregorianToJalali(int gy, int gm, int gd, int &jy, int &jm, int &jd) {
-    int doy = _getDayOfYear(gy, gm, gd);
-    bool gregLeap = _isGregorianLeap(gy);
-    int threshold = gregLeap ? 81 : 80;   // First day of Farvardin = March 21 (day 80) or 81 in leap
-
-    // Year calculation (Milaninia algorithm)
-    if (doy < threshold) jy = gy - 622;
-    else jy = gy - 621;
-
-    // Day-of-year in Jalali calendar
-    int jalaliDayOfYear;
-    if (doy >= threshold) {
-        jalaliDayOfYear = doy - threshold + 1;
-    } else {
-        int prevYear = gy - 1;
-        int prevYearDays = _isGregorianLeap(prevYear) ? 366 : 365;
-        jalaliDayOfYear = doy + (prevYearDays - threshold + 1);
-    }
-
-    // Month days for Jalali
-    int monthDays[12] = {31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29};
-    if (_isJalaliLeap(jy)) monthDays[11] = 30;   // Esfand 30 days in leap
-
-    int remain = jalaliDayOfYear;
+    if (gregLeap) daysInMonth[1] = 29;
+    int gm = 0, gd = doy;
     for (int i = 0; i < 12; i++) {
-        if (remain <= monthDays[i]) {
-            jm = i + 1;
-            jd = remain;
-            return;
-        }
-        remain -= monthDays[i];
+      if (gd <= daysInMonth[i]) {
+        gm = i + 1;
+        break;
+      }
+      gd -= daysInMonth[i];
     }
-    // fallback (should never reach)
-    jm = 12; jd = 30;
-}
-
-void PersianDate::_calculateDayOfWeek() {
-    // Using Gregorian to JDN formula (only for weekday)
-    int y = _gy, m = _gm, d = _gd;
-    if (m < 3) {
-        y--;
-        m += 12;
+    
+    Date check = gregorianToPersian(gy, gm, gd);
+    if (check.year == jy && check.month == jm && check.day == jd) {
+      return {gy, gm, gd};
     }
-    int a = y / 100;
-    int b = a / 4;
-    int c = 2 - a + b;
-    int e = (36525 * (y + 4716)) / 100;
-    int f = (306 * (m + 1)) / 10;
-    long jdn = c + d + e + f - 1524;
-    // 1 Jan 2000 = 2451545 JDN = Saturday (day 1 in our calendar)
-    int w = (jdn + 2) % 7; // 0=Saturday, 6=Friday
-    _dayOfWeek = w + 1;    // 1=Sat ... 7=Fri
+  }
+  return {0, 0, 0};
 }
 
-void PersianDate::convert() {
-    if (_converted) return;
-    _gregorianToJalali(_gy, _gm, _gd, _jy, _jm, _jd);
-    _calculateDayOfWeek();
-    _converted = true;
+// ========== توابع جانبی استاتیک ==========
+String PersianDate::getPersianMonthName(int month) {
+  if (month >= 1 && month <= 12) return String(_persianMonthNames[month - 1]);
+  return "";
 }
 
-int PersianDate::getYear() { if (!_converted) convert(); return _jy; }
-int PersianDate::getMonth() { if (!_converted) convert(); return _jm; }
-int PersianDate::getDay() { if (!_converted) convert(); return _jd; }
+String PersianDate::getShortPersianMonthName(int month) {
+  if (month >= 1 && month <= 12) return String(_shortPersianMonthNames[month - 1]);
+  return "";
+}
 
-String PersianDate::getMonthName() {
-    if (!_converted) convert();
-    if (_jm >= 1 && _jm <= 12) return String(_monthNames[_jm-1]);
-    return "";
+// محاسبه روز هفته با الگوریتم زلر (خروجی فارسی)
+String PersianDate::getPersianWeekdayName(int year, int month, int day) {
+  int y = year, m = month, d = day;
+  if (m < 3) {
+    y--;
+    m += 12;
+  }
+  int K = y % 100;
+  int J = y / 100;
+  int h = (d + (13 * (m + 1)) / 5 + K + K / 4 + J / 4 + 5 * J) % 7;
+  // h: 0=شنبه, 1=یکشنبه, 2=دوشنبه, 3=سه‌شنبه, 4=چهارشنبه, 5=پنجشنبه, 6=جمعه
+  if (h >= 0 && h <= 6) return String(_persianWeekdayNames[h]);
+  return "";
 }
-String PersianDate::getShortMonthName() {
-    if (!_converted) convert();
-    if (_jm >= 1 && _jm <= 12) return String(_shortMonthNames[_jm-1]);
-    return "";
+
+String PersianDate::getShortPersianWeekdayName(int year, int month, int day) {
+  int y = year, m = month, d = day;
+  if (m < 3) {
+    y--;
+    m += 12;
+  }
+  int K = y % 100;
+  int J = y / 100;
+  int h = (d + (13 * (m + 1)) / 5 + K + K / 4 + J / 4 + 5 * J) % 7;
+  if (h >= 0 && h <= 6) return String(_shortPersianWeekdayNames[h]);
+  return "";
 }
-int PersianDate::getDayOfWeek() { if (!_converted) convert(); return _dayOfWeek; }
-String PersianDate::getDayOfWeekName() {
-    if (!_converted) convert();
-    if (_dayOfWeek >= 1 && _dayOfWeek <= 7) return String(_dayNames[_dayOfWeek-1]);
-    return "";
+
+bool PersianDate::isPersianLeapYear(int jy) {
+  if (jy < 1372) return (jy % 4 == 2);
+  else return (jy % 4 == 1);
 }
-String PersianDate::getShortDayOfWeekName() {
-    if (!_converted) convert();
-    if (_dayOfWeek >= 1 && _dayOfWeek <= 7) return String(_shortDayNames[_dayOfWeek-1]);
-    return "";
+
+bool PersianDate::isGregorianLeapYear(int gy) {
+  return (gy % 4 == 0 && (gy % 100 != 0 || gy % 400 == 0));
 }
-String PersianDate::getDateString() {
-    if (!_converted) convert();
-    char buf[12];
-    sprintf(buf, "%04d/%02d/%02d", _jy, _jm, _jd);
-    return String(buf);
+
+// ========== توابع دریافت (غیراستاتیک) ==========
+int PersianDate::getGregorianYear() { return _gy; }
+int PersianDate::getGregorianMonth() { return _gm; }
+int PersianDate::getGregorianDay() { return _gd; }
+int PersianDate::getPersianYear() { return _jy; }
+int PersianDate::getPersianMonth() { return _jm; }
+int PersianDate::getPersianDay() { return _jd; }
+
+String PersianDate::getGregorianDateString() {
+  char buf[12];
+  sprintf(buf, "%04d/%02d/%02d", _gy, _gm, _gd);
+  return String(buf);
 }
+
 String PersianDate::getPersianDateString() {
-    if (!_converted) convert();
-    char buf[30];
-    sprintf(buf, "%d %s %04d", _jd, getMonthName().c_str(), _jy);
-    return String(buf);
+  char buf[12];
+  sprintf(buf, "%04d/%02d/%02d", _jy, _jm, _jd);
+  return String(buf);
 }
+
+String PersianDate::getPersianDateStringWithNames() {
+  char buf[30];
+  sprintf(buf, "%d %s %04d", _jd, getPersianMonthName(_jm).c_str(), _jy);
+  return String(buf);
+}
+
 String PersianDate::getFullPersianDateString() {
-    if (!_converted) convert();
-    char buf[50];
-    sprintf(buf, "%s %d %s %04d", getDayOfWeekName().c_str(), _jd, getMonthName().c_str(), _jy);
-    return String(buf);
+  char buf[50];
+  sprintf(buf, "%s %d %s %04d", 
+          getPersianWeekdayName(_gy, _gm, _gd).c_str(), 
+          _jd, 
+          getPersianMonthName(_jm).c_str(), 
+          _jy);
+  return String(buf);
 }

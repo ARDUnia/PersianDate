@@ -1,53 +1,69 @@
 /*
-  PersianDate.h - Library for Gregorian to Persian (Jalali) date conversion.
-  Version 1.1.0
-  Author: Hamidreza Milaninia (ARDUnia Agency) <milaninia.h@gmail.com>
-  Algorithm provided by Hamidreza Milaninia.
-  Released into the public domain or under MIT License (see LICENSE file).
+  PersianDate.h - Library for Gregorian to Persian (Jalali) date conversion and vice versa.
+  Version 2.0.0
+  Author: Hamidreza Milaninia (ARDUnia Agency)
+  This library is independent of RTClib and can convert both ways.
 */
 
 #ifndef PersianDate_h
 #define PersianDate_h
 
 #include "Arduino.h"
-#include <RTClib.h>
+
+struct Date {
+  int year;
+  int month;
+  int day;
+};
 
 class PersianDate {
 public:
-    PersianDate();
-    void setGregorianDate(int year, int month, int day);
-    void setGregorianDate(const DateTime& dt);
-    void convert();
+  PersianDate();
 
-    int getYear();
-    int getMonth();
-    int getDay();
-    String getMonthName();
-    String getShortMonthName();
-    int getDayOfWeek();      // 1=Saturday ... 7=Friday
-    String getDayOfWeekName();
-    String getShortDayOfWeekName();
-    String getDateString();            // YYYY/MM/DD
-    String getPersianDateString();     // DD MonthName YYYY
-    String getFullPersianDateString(); // Weekday DD MonthName YYYY
+  void setGregorianDate(int year, int month, int day);
+  void setPersianDate(int year, int month, int day);
+
+  void convertGregorianToPersian();
+  void convertPersianToGregorian();
+
+  int getGregorianYear();
+  int getGregorianMonth();
+  int getGregorianDay();
+  int getPersianYear();
+  int getPersianMonth();
+  int getPersianDay();
+
+  String getGregorianDateString();
+  String getPersianDateString();
+  String getPersianDateStringWithNames();
+  String getFullPersianDateString();
+
+  // Static functions
+  static Date gregorianToPersian(int gy, int gm, int gd);
+  static Date persianToGregorian(int jy, int jm, int jd);
+  static String getPersianMonthName(int month);
+  static String getShortPersianMonthName(int month);
+  static String getPersianWeekdayName(int year, int month, int day);
+  static String getShortPersianWeekdayName(int year, int month, int day);
+  static bool isPersianLeapYear(int jy);
+  static bool isGregorianLeapYear(int gy);
 
 private:
-    int _gy, _gm, _gd;
-    int _jy, _jm, _jd;
-    int _dayOfWeek;
-    bool _converted;
+  int _gy, _gm, _gd;
+  int _jy, _jm, _jd;
 
-    static const char* _monthNames[12];
-    static const char* _shortMonthNames[12];
-    static const char* _dayNames[7];
-    static const char* _shortDayNames[7];
+  static const char* _persianMonthNames[12];
+  static const char* _shortPersianMonthNames[12];
+  static const char* _persianWeekdayNames[7];
+  static const char* _shortPersianWeekdayNames[7];
 
-    // Internal conversion helpers
-    bool _isGregorianLeap(int year);
-    int _getDayOfYear(int year, int month, int day);
-    bool _isJalaliLeap(int jy);
-    void _gregorianToJalali(int gy, int gm, int gd, int &jy, int &jm, int &jd);
-    void _calculateDayOfWeek();
+  // Helper static functions
+  static int _gregorianToJdn(int y, int m, int d);
+  static void _jdnToGregorian(int jdn, int &y, int &m, int &d);
+  static int _jalaliToJdn(int jy, int jm, int jd);
+  static void _jdnToJalali(int jdn, int &jy, int &jm, int &jd);
+
+  void _clear();
 };
 
 #endif
