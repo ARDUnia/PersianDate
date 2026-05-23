@@ -1,6 +1,6 @@
 /*
   PersianDate.h - Library for Gregorian to Persian (Jalali) date conversion and vice versa.
-  Version 2.0.0
+  Version 2.0
   Author: Hamidreza Milaninia (ARDUnia Agency)
   This library is independent of RTClib and can convert both ways.
 */
