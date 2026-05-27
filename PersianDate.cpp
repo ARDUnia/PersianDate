@@ -21,6 +21,15 @@ const char* PersianDate::_shortPersianWeekdayNames[7] = {
   "ش", "ی", "د", "س", "چ", "پ", "ج"
 };
 
+// ========== تعطیلات رسمی ثابت (ماه, روز) ==========
+static const byte FIXED_HOLIDAYS[][2] = {
+  {1,1},{1,2},{1,3},{1,4},{1,12},{1,13},  // فروردین
+  {2,1},                                   // اردیبهشت
+  {3,14},{3,15},                           // خرداد
+  {11,22}                                  // بهمن
+};
+static const byte NUM_FIXED_HOLIDAYS = sizeof(FIXED_HOLIDAYS) / sizeof(FIXED_HOLIDAYS[0]);
+
 // ========== سازنده ==========
 PersianDate::PersianDate() {
   _clear();
@@ -93,7 +102,6 @@ Date PersianDate::gregorianToPersian(int gy, int gm, int gd) {
   return {jy, 12, 30};
 }
 
-// تبدیل شمسی به میلادی با استفاده از الگوریتم معکوس
 Date PersianDate::persianToGregorian(int jy, int jm, int jd) {
   int monthDays[12] = {31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29};
   if (isPersianLeapYear(jy)) monthDays[11] = 30;
@@ -129,6 +137,34 @@ Date PersianDate::persianToGregorian(int jy, int jm, int jd) {
   return {0, 0, 0};
 }
 
+// ========== محاسبه JDN (برای روز هفته) ==========
+long PersianDate::_gregorianToJdn(int y, int m, int d) {
+  int a = (14 - m) / 12;
+  long yy = y + 4800 - a;
+  int mm = m + 12 * a - 3;
+  return d + (153 * mm + 2) / 5 + 365 * yy + yy / 4 - yy / 100 + yy / 400 - 32045;
+}
+
+// ========== محاسبه اندیس روز هفته (0=شنبه تا 6=جمعه) با JDN ==========
+int PersianDate::_getWeekdayIndex(int year, int month, int day) {
+  long jdn = _gregorianToJdn(year, month, day);
+  // 1 Jan 2000 = 2451545 JDN = Saturday
+  int w = (jdn + 2) % 7; // 0=Saturday, 1=Sunday, ..., 6=Friday
+  return w;
+}
+
+String PersianDate::getPersianWeekdayName(int year, int month, int day) {
+  int idx = _getWeekdayIndex(year, month, day);
+  if (idx >= 0 && idx <= 6) return String(_persianWeekdayNames[idx]);
+  return "";
+}
+
+String PersianDate::getShortPersianWeekdayName(int year, int month, int day) {
+  int idx = _getWeekdayIndex(year, month, day);
+  if (idx >= 0 && idx <= 6) return String(_shortPersianWeekdayNames[idx]);
+  return "";
+}
+
 // ========== توابع جانبی استاتیک ==========
 String PersianDate::getPersianMonthName(int month) {
   if (month >= 1 && month <= 12) return String(_persianMonthNames[month - 1]);
@@ -140,32 +176,25 @@ String PersianDate::getShortPersianMonthName(int month) {
   return "";
 }
 
-// محاسبه روز هفته با الگوریتم زلر (خروجی فارسی)
-String PersianDate::getPersianWeekdayName(int year, int month, int day) {
-  int y = year, m = month, d = day;
-  if (m < 3) {
-    y--;
-    m += 12;
+bool PersianDate::_isFixedHoliday(int month, int day) {
+  for (byte i = 0; i < NUM_FIXED_HOLIDAYS; i++) {
+    if (FIXED_HOLIDAYS[i][0] == month && FIXED_HOLIDAYS[i][1] == day) {
+      return true;
+    }
   }
-  int K = y % 100;
-  int J = y / 100;
-  int h = (d + (13 * (m + 1)) / 5 + K + K / 4 + J / 4 + 5 * J) % 7;
-  // h: 0=شنبه, 1=یکشنبه, 2=دوشنبه, 3=سه‌شنبه, 4=چهارشنبه, 5=پنجشنبه, 6=جمعه
-  if (h >= 0 && h <= 6) return String(_persianWeekdayNames[h]);
-  return "";
+  return false;
 }
 
-String PersianDate::getShortPersianWeekdayName(int year, int month, int day) {
-  int y = year, m = month, d = day;
-  if (m < 3) {
-    y--;
-    m += 12;
-  }
-  int K = y % 100;
-  int J = y / 100;
-  int h = (d + (13 * (m + 1)) / 5 + K + K / 4 + J / 4 + 5 * J) % 7;
-  if (h >= 0 && h <= 6) return String(_shortPersianWeekdayNames[h]);
-  return "";
+bool PersianDate::isHoliday(int year, int month, int day) {
+  // استفاده از نام روز هفته برای تشخیص جمعه (مقاوم در برابر خطا)
+   String wd = getPersianWeekdayName(year, month, day);
+  if (wd == "جمعه") return true;
+  if (_isFixedHoliday(month, day)) return true;
+  return false;
+}
+
+bool PersianDate::isHoliday() {
+  return isHoliday(_jy, _jm, _jd);
 }
 
 bool PersianDate::isPersianLeapYear(int jy) {

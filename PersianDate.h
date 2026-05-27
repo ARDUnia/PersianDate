@@ -1,6 +1,6 @@
 /*
   PersianDate.h - Library for Gregorian to Persian (Jalali) date conversion and vice versa.
-  Version 2.0
+  Version 2.1.0
   Author: Hamidreza Milaninia (ARDUnia Agency)
   This library is independent of RTClib and can convert both ways.
 */
@@ -38,7 +38,11 @@ public:
   String getPersianDateStringWithNames();
   String getFullPersianDateString();
 
-  // Static functions
+  // Holiday functions
+  bool isHoliday();                          // non-static
+  static bool isHoliday(int year, int month, int day); // static
+
+  // Static conversion functions
   static Date gregorianToPersian(int gy, int gm, int gd);
   static Date persianToGregorian(int jy, int jm, int jd);
   static String getPersianMonthName(int month);
@@ -57,13 +61,12 @@ private:
   static const char* _persianWeekdayNames[7];
   static const char* _shortPersianWeekdayNames[7];
 
-  // Helper static functions
-  static int _gregorianToJdn(int y, int m, int d);
-  static void _jdnToGregorian(int jdn, int &y, int &m, int &d);
-  static int _jalaliToJdn(int jy, int jm, int jd);
-  static void _jdnToJalali(int jdn, int &jy, int &jm, int &jd);
-
   void _clear();
+
+  // Helper static functions (declared here)
+  static long _gregorianToJdn(int y, int m, int d);
+  static int _getWeekdayIndex(int year, int month, int day);
+  static bool _isFixedHoliday(int month, int day);
 };
 
 #endif
