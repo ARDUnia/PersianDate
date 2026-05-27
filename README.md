@@ -1,6 +1,6 @@
 # PersianDate Library for Arduino
 
-**Version:** 2.1.0  
+**Version:** 2.1.1  
 **Author:** Hamidreza Milaninia (ARDUnia Agency)  
 **Contact:** milaninia.h@gmail.com  
 
@@ -28,7 +28,7 @@ A complete, lightweight, and **standalone** library for converting Gregorian (Mi
 1. Open Arduino IDE
 2. Go to **Sketch → Include Library → Manage Libraries**
 3. Search for **"PersianDate"**
-4. Install version **2.1.0**
+4. Install version **2.1.1**
 
 ### Manual installation
 1. Download the ZIP from [GitHub](https://github.com/ARDUnia/PersianDate)
@@ -68,7 +68,7 @@ void setup() {
 void loop() {}
 --------------------------------------
 
-📚 Function Reference (v2.1.0)
+📚 Function Reference (v2.1.1)
 🏗️ Constructor & Setup
 Function	Description
 PersianDate()	Constructor – creates a new PersianDate object
@@ -99,7 +99,7 @@ getPersianDateString()	1405/02/30
 getPersianDateStringWithNames()	30 Ordibehesht 1405
 getFullPersianDateString()	Tuesday 30 Ordibehesht 1405
 
-🛡️ Holiday Detection (NEW in v2.1.0)
+🛡️ Holiday Detection (NEW in v2.1.1)
 Function	Description
 bool isHoliday()	(non-static) Checks if the current Persian date stored in the object is a holiday
 static bool isHoliday(year, month, day)	(static) Checks if a given Persian date is a holiday
@@ -157,7 +157,7 @@ Weekday calculation uses Zeller's Congruence.
 
 📊 Version History
 Version	Description
-2.1.0	Added official Iranian holiday detection (fixed dates) and Friday detection
+2.1.1	Added official Iranian holiday detection (fixed dates) and Friday detection
 2.0.0	Complete rewrite: removed RTClib dependency, added reverse conversion, static functions
 1.1.0	First public release with RTClib dependency
 📄 License
