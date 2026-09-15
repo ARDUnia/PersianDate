@@ -4,6 +4,8 @@
 **Author:** Hamidreza Milaninia (ARDUnia Agency)  
 **Contact:** milaninia.h@gmail.com  
 
+[Hamidreza Milaninia – Personal Website](https://hrmnia.com/)
+
 A complete, lightweight, and **standalone** library for converting Gregorian (Miladi) dates to Persian (Jalali/Shamsi) dates and **vice versa**, featuring **official Persian calendar holiday detection** including Fridays.
 
 ---
