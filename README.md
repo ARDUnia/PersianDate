@@ -142,20 +142,21 @@ struct Date {
 
 ---------------------------------------------
 
-🔧 Algorithm
-The Gregorian → Persian conversion is based on the Milaninia algorithm (provided by the author) which uses:
+## 🔧 Algorithm
 
-Gregorian day-of-year
+The Gregorian-to-Persian and Persian-to-Gregorian conversions use the **Milaninia day-of-year algorithm**, developed by the library author. The algorithm preserves its original lightweight structure and does not use Julian Day Numbers (JDN).
 
-Threshold 80 or 81 (depending on Gregorian leap year) for the start of Farvardin
+Version 2.1.2 improves the original implementation with:
 
-Subtraction of 622 or 621 to obtain Persian year
+* Accurate Gregorian and Persian day-of-year calculations
+* Correct Nowruz boundary handling
+* Persian leap-year detection using the 33-year cycle
+* Symmetric Persian-to-Gregorian conversion
+* Round-trip conversion validation
+* Correct weekday and Friday holiday detection
+* Input validation for Gregorian and Persian dates
 
-Persian leap year rules (different for years before/after 1372)
-
-The reverse conversion (Persian → Gregorian) uses a symmetric algorithm with round-trip validation (no JDN).
-
-Weekday calculation uses Zeller's Congruence.
+The implementation has been validated for every Gregorian date from **2000-01-01 through 2100-12-31**, including known Nowruz boundaries, leap years, weekdays, holidays, and round-trip conversions.
 
 📊 Version History
 Version	Description
