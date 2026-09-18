@@ -68,9 +68,11 @@ void setup() {
 }
 
 void loop() {}
---------------------------------------
+```
 
-📚 Function Reference (v2.1.2)
+---
+
+## 📚 Function Reference (v2.1.2)
 🏗️ Constructor & Setup
 Function	Description
 PersianDate()	Constructor – creates a new PersianDate object
