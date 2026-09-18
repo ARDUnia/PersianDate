@@ -1,4 +1,8 @@
 # PersianDate Library for Arduino
+[![Arduino CI](https://github.com/ARDUnia/PersianDate/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/ARDUnia/PersianDate/actions/workflows/arduino-ci.yml)
+[![Native Tests](https://github.com/ARDUnia/PersianDate/actions/workflows/native-tests.yml/badge.svg)](https://github.com/ARDUnia/PersianDate/actions/workflows/native-tests.yml)
+[![Latest Release](https://img.shields.io/github/v/release/ARDUnia/PersianDate)](https://github.com/ARDUnia/PersianDate/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.txt)
 
 **Version:** 2.1.2  
 **Author:** Hamidreza Milaninia (ARDUnia Agency)  
