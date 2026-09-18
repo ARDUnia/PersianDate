@@ -158,11 +158,15 @@ Version 2.1.2 improves the original implementation with:
 
 The implementation has been validated for every Gregorian date from **2000-01-01 through 2100-12-31**, including known Nowruz boundaries, leap years, weekdays, holidays, and round-trip conversions.
 
-📊 Version History
-Version	Description
-2.1.1	Added official Iranian holiday detection (fixed dates) and Friday detection
-2.0.0	Complete rewrite: removed RTClib dependency, added reverse conversion, static functions
-1.1.0	First public release with RTClib dependency
+## 📊 Version History
+
+| Version | Description                                                                                                                                                  |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 2.1.2   | Fixed Nowruz boundaries, Persian leap-year calculation, reverse conversion, weekday and Friday holiday detection; added input validation and automated tests |
+| 2.1.1   | Added official Iranian holiday detection for fixed dates and Fridays                                                                                         |
+| 2.0.0   | Complete rewrite: removed RTClib dependency and added reverse conversion and static functions                                                                |
+| 1.1.0   | First public release with RTClib dependency                                                                                                                  |
+
 📄 License
 This library is released under the MIT License. See the LICENSE file for details.
 
