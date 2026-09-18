@@ -1,6 +1,10 @@
 # PersianDate Library for Arduino
+[![Arduino CI](https://github.com/ARDUnia/PersianDate/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/ARDUnia/PersianDate/actions/workflows/arduino-ci.yml)
+[![Native Tests](https://github.com/ARDUnia/PersianDate/actions/workflows/native-tests.yml/badge.svg)](https://github.com/ARDUnia/PersianDate/actions/workflows/native-tests.yml)
+[![Latest Release](https://img.shields.io/github/v/release/ARDUnia/PersianDate)](https://github.com/ARDUnia/PersianDate/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.txt)
 
-**Version:** 2.1.1  
+**Version:** 2.1.2  
 **Author:** Hamidreza Milaninia (ARDUnia Agency)  
 **Contact:** milaninia.h@gmail.com  
 
@@ -30,7 +34,7 @@ A complete, lightweight, and **standalone** library for converting Gregorian (Mi
 1. Open Arduino IDE
 2. Go to **Sketch → Include Library → Manage Libraries**
 3. Search for **"PersianDate"**
-4. Install version **2.1.1**
+4. Install version **2.1.2**
 
 ### Manual installation
 1. Download the ZIP from [GitHub](https://github.com/ARDUnia/PersianDate)
@@ -64,115 +68,144 @@ void setup() {
   // Persian to Gregorian
   pd.setPersianDate(1405, 11, 22);
   pd.convertPersianToGregorian();
-  Serial.println(pd.getGregorianDateString()); // 2027/02/11 (approx)
+  Serial.println(pd.getGregorianDateString()); // 2027/02/11
 }
 
 void loop() {}
---------------------------------------
+```
 
-📚 Function Reference (v2.1.1)
-🏗️ Constructor & Setup
-Function	Description
-PersianDate()	Constructor – creates a new PersianDate object
+---
 
-📥 Setting Dates
-Function	Parameters	Description
-setGregorianDate(year, month, day)	year, month, day	Sets Gregorian date
-setPersianDate(year, month, day)	year, month, day	Sets Persian (Jalali) date
+## 📚 Function Reference (v2.1.2)
 
-🔄 Conversion Methods
-Function	Description
-convertGregorianToPersian()	Converts set Gregorian date to Persian
-convertPersianToGregorian()	Converts set Persian date to Gregorian
+### 🏗️ Constructor and Setup
 
-📤 Getters (after conversion)
-Function	Returns	Example
-getGregorianYear()	int	2026
-getGregorianMonth()	int	5
-getGregorianDay()	int	20
-getPersianYear()	int	1405
-getPersianMonth()	int	2
-getPersianDay()	int	30
+| Function                             | Description                      |
+| ------------------------------------ | -------------------------------- |
+| `PersianDate()`                      | Creates a new PersianDate object |
+| `setGregorianDate(year, month, day)` | Sets the Gregorian date          |
+| `setPersianDate(year, month, day)`   | Sets the Persian date            |
 
-📝 Formatted String Outputs
-Function	Example Output
-getGregorianDateString()	2026/05/20
-getPersianDateString()	1405/02/30
-getPersianDateStringWithNames()	30 Ordibehesht 1405
-getFullPersianDateString()	Tuesday 30 Ordibehesht 1405
+### 🔄 Conversion Methods
 
-🛡️ Holiday Detection (NEW in v2.1.1)
-Function	Description
-bool isHoliday()	(non-static) Checks if the current Persian date stored in the object is a holiday
-static bool isHoliday(year, month, day)	(static) Checks if a given Persian date is a holiday
-Recognized holidays:
+| Function                      | Description                                   |
+| ----------------------------- | --------------------------------------------- |
+| `convertGregorianToPersian()` | Converts the stored Gregorian date to Persian |
+| `convertPersianToGregorian()` | Converts the stored Persian date to Gregorian |
 
-Fridays (every Friday)
+### 📤 Date Getters
 
-Fixed official holidays:
-Farvardin 1–4 (Nowruz – Persian New Year)
-Farvardin 12 (Islamic Republic Day)
-Farvardin 13 (Nature's Day)
-Ordibehesht 1 (Workers' Day)
-Khordad 14 (Death of Khomeini)
-Khordad 15 (Khordad 15 Uprising)
-Bahman 22 (Iranian Revolution Victory Day)
+| Function              | Returns         |
+| --------------------- | --------------- |
+| `getGregorianYear()`  | Gregorian year  |
+| `getGregorianMonth()` | Gregorian month |
+| `getGregorianDay()`   | Gregorian day   |
+| `getPersianYear()`    | Persian year    |
+| `getPersianMonth()`   | Persian month   |
+| `getPersianDay()`     | Persian day     |
 
-Note: Movable Islamic (Lunar) holidays (Eid al-Fitr, Eid al-Adha, Ashura, etc.) are not included in this version. They require lunar calendar calculations.
+### 📝 Formatted Outputs
 
-🧰 Static Functions (no object needed)
-Function	Description
-gregorianToPersian(gy,gm,gd)	Direct Gregorian → Persian conversion, returns Date
-persianToGregorian(jy,jm,jd)	Direct Persian → Gregorian conversion
-getPersianMonthName(month)	Persian month name (e.g., Ordibehesht)
-getShortPersianMonthName(month)	Short Persian month name (e.g., Ord)
-getPersianWeekdayName(year,month,day)	Persian weekday name (e.g., Tuesday)
-getShortPersianWeekdayName(year,month,day)	Short weekday name (e.g., Tue)
-isPersianLeapYear(jy)	Checks if a Persian year is leap
-isGregorianLeapYear(gy)	Checks if a Gregorian year is leap
-isHoliday(year,month,day)	Checks if a given Persian date is a holiday
+| Function                          | Example output           |
+| --------------------------------- | ------------------------ |
+| `getGregorianDateString()`        | `2026/05/20`             |
+| `getPersianDateString()`          | `1405/02/30`             |
+| `getPersianDateStringWithNames()` | `30 Ordibehesht 1405`    |
+| `getFullPersianDateString()`      | Persian weekday and date |
 
-📐 Date Structure
-cpp
+### 🛡️ Holiday Detection
+
+| Function                      | Description                                                       |
+| ----------------------------- | ----------------------------------------------------------------- |
+| `isHoliday()`                 | Checks whether the Persian date stored in the object is a holiday |
+| `isHoliday(year, month, day)` | Checks whether the specified Persian date is a holiday            |
+
+Recognized holidays include:
+
+* Every Friday
+* Farvardin 1–4: Nowruz
+* Farvardin 12: Islamic Republic Day
+* Farvardin 13: Nature Day
+* Ordibehesht 1: Workers' Day
+* Khordad 14
+* Khordad 15
+* Bahman 22: Iranian Revolution Victory Day
+
+Movable Islamic lunar holidays are not included because they require lunar calendar calculations.
+
+### 🧰 Static Functions
+
+| Function                                       | Description                                                       |
+| ---------------------------------------------- | ----------------------------------------------------------------- |
+| `gregorianToPersian(gy, gm, gd)`               | Converts a Gregorian date and returns a `Date`                    |
+| `persianToGregorian(jy, jm, jd)`               | Converts a Persian date and returns a `Date`                      |
+| `getPersianMonthName(month)`                   | Returns the full Persian month name                               |
+| `getShortPersianMonthName(month)`              | Returns the abbreviated Persian month name                        |
+| `getPersianWeekdayName(year, month, day)`      | Returns the Persian weekday name for a Gregorian date             |
+| `getShortPersianWeekdayName(year, month, day)` | Returns the abbreviated Persian weekday name for a Gregorian date |
+| `isPersianLeapYear(jy)`                        | Checks whether a Persian year is a leap year                      |
+| `isGregorianLeapYear(gy)`                      | Checks whether a Gregorian year is a leap year                    |
+
+Invalid conversion inputs return a `Date` containing `0, 0, 0`.
+
+### 📐 Date Structure
+
+```cpp
 struct Date {
   int year;
   int month;
   int day;
 };
+```
 
----------------------------------------------
+---
 
-🔧 Algorithm
-The Gregorian → Persian conversion is based on the Milaninia algorithm (provided by the author) which uses:
+## 🔧 Algorithm
 
-Gregorian day-of-year
+The Gregorian-to-Persian and Persian-to-Gregorian conversions use the **Milaninia day-of-year algorithm**, developed by the library author. The algorithm preserves its original lightweight structure and does not use Julian Day Numbers (JDN).
 
-Threshold 80 or 81 (depending on Gregorian leap year) for the start of Farvardin
+Version 2.1.2 improves the original implementation with:
 
-Subtraction of 622 or 621 to obtain Persian year
+* Accurate Gregorian and Persian day-of-year calculations
+* Correct Nowruz boundary handling
+* Persian leap-year detection using the 33-year cycle
+* Symmetric Persian-to-Gregorian conversion
+* Round-trip conversion validation
+* Correct weekday and Friday holiday detection
+* Input validation for Gregorian and Persian dates
 
-Persian leap year rules (different for years before/after 1372)
+The implementation has been validated for every Gregorian date from **2000-01-01 through 2100-12-31**, including known Nowruz boundaries, leap years, weekdays, holidays, and round-trip conversions.
 
-The reverse conversion (Persian → Gregorian) uses a symmetric algorithm with round-trip validation (no JDN).
+## 📊 Version History
 
-Weekday calculation uses Zeller's Congruence.
+| Version | Description                                                                                                                                                  |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 2.1.2   | Fixed Nowruz boundaries, Persian leap-year calculation, reverse conversion, weekday and Friday holiday detection; added input validation and automated tests |
+| 2.1.1   | Added official Iranian holiday detection for fixed dates and Fridays                                                                                         |
+| 2.0.0   | Complete rewrite: removed RTClib dependency and added reverse conversion and static functions                                                                |
+| 1.1.0   | First public release with RTClib dependency                                                                                                                  |
 
-📊 Version History
-Version	Description
-2.1.1	Added official Iranian holiday detection (fixed dates) and Friday detection
-2.0.0	Complete rewrite: removed RTClib dependency, added reverse conversion, static functions
-1.1.0	First public release with RTClib dependency
-📄 License
-This library is released under the MIT License. See the LICENSE file for details.
+## 📚 Project Documentation
 
-👤 Author
-Hamidreza Milaninia
+* [Changelog](CHANGELOG.md)
+* [Contributing Guidelines](CONTRIBUTING.md)
+* [Security Policy](SECURITY.md)
+
+## 📄 License
+
+This library is released under the MIT License. See [LICENSE.txt](LICENSE.txt) for details.
+
+## 👤 Author
+
+**Hamidreza Milaninia**
 ARDUnia Agency
-milaninia.h@gmail.com
+[milaninia.h@gmail.com](mailto:milaninia.h@gmail.com)
+[Personal Website](https://hrmnia.com/)
 
-🤝 Contributing
-Bug reports, feature requests, and pull requests are welcome via GitHub.
+## 🤝 Contributing
 
-⭐ Support
-If you find this library useful, please give it a star on GitHub!
+Bug reports, test cases, documentation improvements, and pull requests are welcome. Please read the [Contributing Guidelines](CONTRIBUTING.md) before submitting a change.
 
+## ⭐ Support
+
+If you find PersianDate useful, please consider giving the repository a star.
