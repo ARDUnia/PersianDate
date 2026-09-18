@@ -68,7 +68,7 @@ void setup() {
   // Persian to Gregorian
   pd.setPersianDate(1405, 11, 22);
   pd.convertPersianToGregorian();
-  Serial.println(pd.getGregorianDateString()); // 2027/02/11 (approx)
+  Serial.println(pd.getGregorianDateString()); // 2027/02/11
 }
 
 void loop() {}
@@ -185,17 +185,27 @@ The implementation has been validated for every Gregorian date from **2000-01-01
 | 2.0.0   | Complete rewrite: removed RTClib dependency and added reverse conversion and static functions                                                                |
 | 1.1.0   | First public release with RTClib dependency                                                                                                                  |
 
-📄 License
-This library is released under the MIT License. See the LICENSE file for details.
+## 📚 Project Documentation
 
-👤 Author
-Hamidreza Milaninia
+* [Changelog](CHANGELOG.md)
+* [Contributing Guidelines](CONTRIBUTING.md)
+* [Security Policy](SECURITY.md)
+
+## 📄 License
+
+This library is released under the MIT License. See [LICENSE.txt](LICENSE.txt) for details.
+
+## 👤 Author
+
+**Hamidreza Milaninia**
 ARDUnia Agency
-milaninia.h@gmail.com
+[milaninia.h@gmail.com](mailto:milaninia.h@gmail.com)
+[Personal Website](https://hrmnia.com/)
 
-🤝 Contributing
-Bug reports, feature requests, and pull requests are welcome via GitHub.
+## 🤝 Contributing
 
-⭐ Support
-If you find this library useful, please give it a star on GitHub!
+Bug reports, test cases, documentation improvements, and pull requests are welcome. Please read the [Contributing Guidelines](CONTRIBUTING.md) before submitting a change.
 
+## ⭐ Support
+
+If you find PersianDate useful, please consider giving the repository a star.
