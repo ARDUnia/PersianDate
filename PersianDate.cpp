@@ -68,13 +68,14 @@ void PersianDate::convertPersianToGregorian() {
 // ========== توابع استاتیک عمومی ==========
 
 Date PersianDate::gregorianToPersian(int gy, int gm, int gd) {
+  if (!_isValidGregorianDate(gy, gm, gd)) return {0, 0, 0};
+
   int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
   if (isGregorianLeapYear(gy)) daysInMonth[1] = 29;
   int doy = gd;
   for (int i = 0; i < gm - 1; i++) doy += daysInMonth[i];
 
-  bool gregLeap = isGregorianLeapYear(gy);
-  int threshold = gregLeap ? 81 : 80;
+  int threshold = _farvardinStartDayOfYear(gy);
 
   int jy;
   if (doy < threshold) jy = gy - 622;
@@ -85,8 +86,9 @@ Date PersianDate::gregorianToPersian(int gy, int gm, int gd) {
     jalaliDayOfYear = doy - threshold + 1;
   } else {
     int prevYear = gy - 1;
-    int prevYearDays = isGregorianLeapYear(prevYear) ? 366 : 365;
-    jalaliDayOfYear = doy + (prevYearDays - threshold + 1);
+    int previousThreshold = _farvardinStartDayOfYear(prevYear);
+    jalaliDayOfYear = doy + _daysInGregorianYear(prevYear)
+                           - previousThreshold + 1;
   }
 
   int monthDays[12] = {31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29};
@@ -99,42 +101,82 @@ Date PersianDate::gregorianToPersian(int gy, int gm, int gd) {
     }
     remain -= monthDays[i];
   }
-  return {jy, 12, 30};
+  return {0, 0, 0};
 }
 
 Date PersianDate::persianToGregorian(int jy, int jm, int jd) {
+  if (!_isValidPersianDate(jy, jm, jd)) return {0, 0, 0};
+
   int monthDays[12] = {31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29};
   if (isPersianLeapYear(jy)) monthDays[11] = 30;
   int jalaliDayOfYear = jd;
   for (int i = 0; i < jm - 1; i++) jalaliDayOfYear += monthDays[i];
-  
-  int candidates[2] = {jy + 621, jy + 622};
-  for (int idx = 0; idx < 2; idx++) {
-    int gy = candidates[idx];
-    bool gregLeap = isGregorianLeapYear(gy);
-    int threshold = gregLeap ? 81 : 80;
-    int doy = jalaliDayOfYear + threshold - 1;
-    
-    int maxDays = gregLeap ? 366 : 365;
-    if (doy < 1 || doy > maxDays) continue;
-    
-    int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    if (gregLeap) daysInMonth[1] = 29;
-    int gm = 0, gd = doy;
-    for (int i = 0; i < 12; i++) {
-      if (gd <= daysInMonth[i]) {
-        gm = i + 1;
-        break;
-      }
-      gd -= daysInMonth[i];
+
+  int gy = jy + 621;
+  int doy = jalaliDayOfYear + _farvardinStartDayOfYear(gy) - 1;
+
+  if (doy > _daysInGregorianYear(gy)) {
+    doy -= _daysInGregorianYear(gy);
+    gy++;
+  }
+
+  int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+  if (isGregorianLeapYear(gy)) daysInMonth[1] = 29;
+
+  int gm = 1;
+  while (gm <= 12 && doy > daysInMonth[gm - 1]) {
+    doy -= daysInMonth[gm - 1];
+    gm++;
+  }
+
+  if (gm > 12) return {0, 0, 0};
+  return {gy, gm, doy};
+}
+
+int PersianDate::_daysInGregorianYear(int year) {
+  return isGregorianLeapYear(year) ? 366 : 365;
+}
+
+// The Milaninia day-of-year method uses 2024-03-20 (1403-01-01) as an
+// anchor and moves between years using the exact lengths of both calendars.
+int PersianDate::_farvardinStartDayOfYear(int gregorianYear) {
+  const int anchorGregorianYear = 2024;
+  int threshold = 80;  // 2024-03-20 in a Gregorian leap year
+
+  if (gregorianYear > anchorGregorianYear) {
+    for (int year = anchorGregorianYear + 1; year <= gregorianYear; year++) {
+      int previousPersianYear = year - 622;
+      threshold += (isPersianLeapYear(previousPersianYear) ? 366 : 365)
+                 - _daysInGregorianYear(year - 1);
     }
-    
-    Date check = gregorianToPersian(gy, gm, gd);
-    if (check.year == jy && check.month == jm && check.day == jd) {
-      return {gy, gm, gd};
+  } else if (gregorianYear < anchorGregorianYear) {
+    for (int year = anchorGregorianYear; year > gregorianYear; year--) {
+      int previousPersianYear = year - 622;
+      threshold -= (isPersianLeapYear(previousPersianYear) ? 366 : 365)
+                 - _daysInGregorianYear(year - 1);
     }
   }
-  return {0, 0, 0};
+
+  return threshold;
+}
+
+bool PersianDate::_isValidGregorianDate(int year, int month, int day) {
+  if (year < 2000 || year > 2100 || month < 1 || month > 12 || day < 1) {
+    return false;
+  }
+  int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+  if (isGregorianLeapYear(year)) daysInMonth[1] = 29;
+  return day <= daysInMonth[month - 1];
+}
+
+bool PersianDate::_isValidPersianDate(int year, int month, int day) {
+  if (year < 1378 || year > 1479 || month < 1 || month > 12 || day < 1) {
+    return false;
+  }
+  int maxDay = month <= 6 ? 31
+             : month <= 11 ? 30
+             : isPersianLeapYear(year) ? 30 : 29;
+  return day <= maxDay;
 }
 
 // ========== محاسبه JDN (برای روز هفته) ==========
@@ -186,8 +228,10 @@ bool PersianDate::_isFixedHoliday(int month, int day) {
 }
 
 bool PersianDate::isHoliday(int year, int month, int day) {
-  // استفاده از نام روز هفته برای تشخیص جمعه (مقاوم در برابر خطا)
-   String wd = getPersianWeekdayName(year, month, day);
+  if (!_isValidPersianDate(year, month, day)) return false;
+  Date gregorian = persianToGregorian(year, month, day);
+  String wd = getPersianWeekdayName(
+      gregorian.year, gregorian.month, gregorian.day);
   if (wd == "جمعه") return true;
   if (_isFixedHoliday(month, day)) return true;
   return false;
@@ -198,8 +242,11 @@ bool PersianDate::isHoliday() {
 }
 
 bool PersianDate::isPersianLeapYear(int jy) {
-  if (jy < 1372) return (jy % 4 == 2);
-  else return (jy % 4 == 1);
+  int remainder = jy % 33;
+  if (remainder < 0) remainder += 33;
+  return remainder == 1 || remainder == 5 || remainder == 9 ||
+         remainder == 13 || remainder == 17 || remainder == 22 ||
+         remainder == 26 || remainder == 30;
 }
 
 bool PersianDate::isGregorianLeapYear(int gy) {

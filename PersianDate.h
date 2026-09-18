@@ -63,7 +63,11 @@ private:
 
   void _clear();
 
-  // Helper static functions (declared here)
+  // Helper static functions
+  static int _daysInGregorianYear(int year);
+  static int _farvardinStartDayOfYear(int gregorianYear);
+  static bool _isValidGregorianDate(int year, int month, int day);
+  static bool _isValidPersianDate(int year, int month, int day);
   static long _gregorianToJdn(int y, int m, int d);
   static int _getWeekdayIndex(int year, int month, int day);
   static bool _isFixedHoliday(int month, int day);
