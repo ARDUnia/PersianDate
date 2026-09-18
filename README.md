@@ -77,76 +77,88 @@ void loop() {}
 ---
 
 ## 📚 Function Reference (v2.1.2)
-🏗️ Constructor & Setup
-Function	Description
-PersianDate()	Constructor – creates a new PersianDate object
 
-📥 Setting Dates
-Function	Parameters	Description
-setGregorianDate(year, month, day)	year, month, day	Sets Gregorian date
-setPersianDate(year, month, day)	year, month, day	Sets Persian (Jalali) date
+### 🏗️ Constructor and Setup
 
-🔄 Conversion Methods
-Function	Description
-convertGregorianToPersian()	Converts set Gregorian date to Persian
-convertPersianToGregorian()	Converts set Persian date to Gregorian
+| Function                             | Description                      |
+| ------------------------------------ | -------------------------------- |
+| `PersianDate()`                      | Creates a new PersianDate object |
+| `setGregorianDate(year, month, day)` | Sets the Gregorian date          |
+| `setPersianDate(year, month, day)`   | Sets the Persian date            |
 
-📤 Getters (after conversion)
-Function	Returns	Example
-getGregorianYear()	int	2026
-getGregorianMonth()	int	5
-getGregorianDay()	int	20
-getPersianYear()	int	1405
-getPersianMonth()	int	2
-getPersianDay()	int	30
+### 🔄 Conversion Methods
 
-📝 Formatted String Outputs
-Function	Example Output
-getGregorianDateString()	2026/05/20
-getPersianDateString()	1405/02/30
-getPersianDateStringWithNames()	30 Ordibehesht 1405
-getFullPersianDateString()	Tuesday 30 Ordibehesht 1405
+| Function                      | Description                                   |
+| ----------------------------- | --------------------------------------------- |
+| `convertGregorianToPersian()` | Converts the stored Gregorian date to Persian |
+| `convertPersianToGregorian()` | Converts the stored Persian date to Gregorian |
 
-🛡️ Holiday Detection (NEW in v2.1.1)
-Function	Description
-bool isHoliday()	(non-static) Checks if the current Persian date stored in the object is a holiday
-static bool isHoliday(year, month, day)	(static) Checks if a given Persian date is a holiday
-Recognized holidays:
+### 📤 Date Getters
 
-Fridays (every Friday)
+| Function              | Returns         |
+| --------------------- | --------------- |
+| `getGregorianYear()`  | Gregorian year  |
+| `getGregorianMonth()` | Gregorian month |
+| `getGregorianDay()`   | Gregorian day   |
+| `getPersianYear()`    | Persian year    |
+| `getPersianMonth()`   | Persian month   |
+| `getPersianDay()`     | Persian day     |
 
-Fixed official holidays:
-Farvardin 1–4 (Nowruz – Persian New Year)
-Farvardin 12 (Islamic Republic Day)
-Farvardin 13 (Nature's Day)
-Ordibehesht 1 (Workers' Day)
-Khordad 14 (Death of Khomeini)
-Khordad 15 (Khordad 15 Uprising)
-Bahman 22 (Iranian Revolution Victory Day)
+### 📝 Formatted Outputs
 
-Note: Movable Islamic (Lunar) holidays (Eid al-Fitr, Eid al-Adha, Ashura, etc.) are not included in this version. They require lunar calendar calculations.
+| Function                          | Example output           |
+| --------------------------------- | ------------------------ |
+| `getGregorianDateString()`        | `2026/05/20`             |
+| `getPersianDateString()`          | `1405/02/30`             |
+| `getPersianDateStringWithNames()` | `30 Ordibehesht 1405`    |
+| `getFullPersianDateString()`      | Persian weekday and date |
 
-🧰 Static Functions (no object needed)
-Function	Description
-gregorianToPersian(gy,gm,gd)	Direct Gregorian → Persian conversion, returns Date
-persianToGregorian(jy,jm,jd)	Direct Persian → Gregorian conversion
-getPersianMonthName(month)	Persian month name (e.g., Ordibehesht)
-getShortPersianMonthName(month)	Short Persian month name (e.g., Ord)
-getPersianWeekdayName(year,month,day)	Persian weekday name (e.g., Tuesday)
-getShortPersianWeekdayName(year,month,day)	Short weekday name (e.g., Tue)
-isPersianLeapYear(jy)	Checks if a Persian year is leap
-isGregorianLeapYear(gy)	Checks if a Gregorian year is leap
-isHoliday(year,month,day)	Checks if a given Persian date is a holiday
+### 🛡️ Holiday Detection
 
-📐 Date Structure
-cpp
+| Function                      | Description                                                       |
+| ----------------------------- | ----------------------------------------------------------------- |
+| `isHoliday()`                 | Checks whether the Persian date stored in the object is a holiday |
+| `isHoliday(year, month, day)` | Checks whether the specified Persian date is a holiday            |
+
+Recognized holidays include:
+
+* Every Friday
+* Farvardin 1–4: Nowruz
+* Farvardin 12: Islamic Republic Day
+* Farvardin 13: Nature Day
+* Ordibehesht 1: Workers' Day
+* Khordad 14
+* Khordad 15
+* Bahman 22: Iranian Revolution Victory Day
+
+Movable Islamic lunar holidays are not included because they require lunar calendar calculations.
+
+### 🧰 Static Functions
+
+| Function                                       | Description                                                       |
+| ---------------------------------------------- | ----------------------------------------------------------------- |
+| `gregorianToPersian(gy, gm, gd)`               | Converts a Gregorian date and returns a `Date`                    |
+| `persianToGregorian(jy, jm, jd)`               | Converts a Persian date and returns a `Date`                      |
+| `getPersianMonthName(month)`                   | Returns the full Persian month name                               |
+| `getShortPersianMonthName(month)`              | Returns the abbreviated Persian month name                        |
+| `getPersianWeekdayName(year, month, day)`      | Returns the Persian weekday name for a Gregorian date             |
+| `getShortPersianWeekdayName(year, month, day)` | Returns the abbreviated Persian weekday name for a Gregorian date |
+| `isPersianLeapYear(jy)`                        | Checks whether a Persian year is a leap year                      |
+| `isGregorianLeapYear(gy)`                      | Checks whether a Gregorian year is a leap year                    |
+
+Invalid conversion inputs return a `Date` containing `0, 0, 0`.
+
+### 📐 Date Structure
+
+```cpp
 struct Date {
   int year;
   int month;
   int day;
 };
+```
 
----------------------------------------------
+---
 
 ## 🔧 Algorithm
 
