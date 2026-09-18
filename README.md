@@ -1,6 +1,6 @@
 # PersianDate Library for Arduino
 
-**Version:** 2.1.1  
+**Version:** 2.1.2  
 **Author:** Hamidreza Milaninia (ARDUnia Agency)  
 **Contact:** milaninia.h@gmail.com  
 
@@ -30,7 +30,7 @@ A complete, lightweight, and **standalone** library for converting Gregorian (Mi
 1. Open Arduino IDE
 2. Go to **Sketch → Include Library → Manage Libraries**
 3. Search for **"PersianDate"**
-4. Install version **2.1.1**
+4. Install version **2.1.2**
 
 ### Manual installation
 1. Download the ZIP from [GitHub](https://github.com/ARDUnia/PersianDate)
@@ -70,7 +70,7 @@ void setup() {
 void loop() {}
 --------------------------------------
 
-📚 Function Reference (v2.1.1)
+📚 Function Reference (v2.1.2)
 🏗️ Constructor & Setup
 Function	Description
 PersianDate()	Constructor – creates a new PersianDate object
